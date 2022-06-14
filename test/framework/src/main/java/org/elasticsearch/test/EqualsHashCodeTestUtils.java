@@ -13,6 +13,7 @@ import java.io.IOException;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -59,7 +60,7 @@ public class EqualsHashCodeTestUtils {
     public static <T> void checkEqualsAndHashCode(T original, CopyFunction<T> copyFunction, MutateFunction<T> mutationFunction) {
         try {
             String objectName = original.getClass().getSimpleName();
-            assertFalse(objectName + " is equal to null", original.equals(null));
+            assertNotEquals(objectName + " is equal to null", original, null);
             // TODO not sure how useful the following test is
             assertFalse(objectName + " is equal to incompatible type", original.equals(ESTestCase.randomFrom(someObjects)));
             assertTrue(objectName + " is not equal to self", original.equals(original));
