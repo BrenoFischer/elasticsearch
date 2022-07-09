@@ -42,7 +42,6 @@ import org.elasticsearch.cluster.routing.allocation.command.AllocationCommand;
 import org.elasticsearch.cluster.routing.allocation.command.AllocationCommands;
 import org.elasticsearch.cluster.routing.allocation.command.MoveAllocationCommand;
 import org.elasticsearch.common.UUIDs;
-import org.elasticsearch.common.collect.ImmutableOpenMap;
 import org.elasticsearch.common.settings.ClusterSettings;
 import org.elasticsearch.common.settings.Setting;
 import org.elasticsearch.common.settings.Settings;
@@ -1195,11 +1194,10 @@ public class DiskThresholdDeciderTests extends ESAllocationTestCase {
             )
             .build();
 
-        final ImmutableOpenMap.Builder<ShardId, RestoreInProgress.ShardRestoreStatus> shards = ImmutableOpenMap.builder();
-        shards.put(shardId, new RestoreInProgress.ShardRestoreStatus("node1"));
+        Map<ShardId, RestoreInProgress.ShardRestoreStatus> shards = Map.of(shardId, new RestoreInProgress.ShardRestoreStatus("node1"));
 
         final RestoreInProgress.Builder restores = new RestoreInProgress.Builder().add(
-            new RestoreInProgress.Entry("_restore_uuid", snapshot, RestoreInProgress.State.INIT, List.of("test"), shards.build())
+            new RestoreInProgress.Entry("_restore_uuid", snapshot, RestoreInProgress.State.INIT, List.of("test"), shards)
         );
 
         ClusterState clusterState = ClusterState.builder(new ClusterName(getTestName()))
@@ -1249,7 +1247,7 @@ public class DiskThresholdDeciderTests extends ESAllocationTestCase {
         assertThat(shardsWithState(clusterState.getRoutingNodes(), UNASSIGNED).size(), equalTo(1));
 
         final SnapshotShard snapshotShard = new SnapshotShard(snapshot, indexId, shardId);
-        final ImmutableOpenMap.Builder<SnapshotShard, Long> snapshotShardSizes = ImmutableOpenMap.builder();
+        final Map<SnapshotShard, Long> snapshotShardSizes = new HashMap<>();
 
         final boolean shouldAllocate;
         if (randomBoolean()) {
@@ -1263,7 +1261,7 @@ public class DiskThresholdDeciderTests extends ESAllocationTestCase {
             logger.info("--> shard is always allocated when its size could not be retrieved");
             shouldAllocate = true;
         }
-        snapshotShardSizeInfoRef.set(new SnapshotShardSizeInfo(snapshotShardSizes.build()));
+        snapshotShardSizeInfoRef.set(new SnapshotShardSizeInfo(snapshotShardSizes));
 
         // reroute uses the previous snapshot shard size
         clusterState = startInitializingShardsAndReroute(strategy, clusterState);
