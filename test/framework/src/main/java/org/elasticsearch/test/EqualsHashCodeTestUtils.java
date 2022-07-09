@@ -21,7 +21,9 @@ import static org.junit.Assert.assertTrue;
  * Utility class that encapsulates standard checks and assertions around testing the equals() and hashCode()
  * methods of objects that implement them.
  */
-public class EqualsHashCodeTestUtils {
+public final class EqualsHashCodeTestUtils {
+
+    private EqualsHashCodeTestUtils() {}
 
     private static Object[] someObjects = new Object[] { "some string", Integer.valueOf(1), Double.valueOf(1.0) };
 
@@ -62,8 +64,8 @@ public class EqualsHashCodeTestUtils {
             String objectName = original.getClass().getSimpleName();
             assertNotEquals(objectName + " is equal to null", original, null);
             // TODO not sure how useful the following test is
-            assertFalse(objectName + " is equal to incompatible type", original.equals(ESTestCase.randomFrom(someObjects)));
-            assertTrue(objectName + " is not equal to self", original.equals(original));
+            assertNotEquals(objectName + " is equal to incompatible type", original, ESTestCase.randomFrom(someObjects));
+            assertEquals(objectName + " is not equal to self", original, original);
             assertThat(
                 objectName + " hashcode returns different values if called multiple times",
                 original.hashCode(),
@@ -75,18 +77,18 @@ public class EqualsHashCodeTestUtils {
             }
 
             T copy = copyFunction.copy(original);
-            assertTrue(objectName + " copy is not equal to self", copy.equals(copy));
-            assertTrue(objectName + " is not equal to its copy", original.equals(copy));
-            assertTrue("equals is not symmetric", copy.equals(original));
+            assertEquals(objectName + " copy is not equal to self", copy, copy);
+            assertEquals(objectName + " is not equal to its copy", original, copy);
+            assertEquals("equals is not symmetric", copy, original);
             assertThat(objectName + " hashcode is different from copies hashcode", copy.hashCode(), equalTo(original.hashCode()));
 
             T secondCopy = copyFunction.copy(copy);
-            assertTrue("second copy is not equal to self", secondCopy.equals(secondCopy));
-            assertTrue("copy is not equal to its second copy", copy.equals(secondCopy));
+            assertEquals("second copy is not equal to self", secondCopy, secondCopy);
+            assertEquals("copy is not equal to its second copy", copy, secondCopy);
             assertThat("second copy's hashcode is different from original hashcode", copy.hashCode(), equalTo(secondCopy.hashCode()));
-            assertTrue("equals is not transitive", original.equals(secondCopy));
-            assertTrue("equals is not symmetric", secondCopy.equals(copy));
-            assertTrue("equals is not symmetric", secondCopy.equals(original));
+            assertEquals("equals is not transitive", original, secondCopy);
+            assertEquals("equals is not symmetric", secondCopy, copy);
+            assertEquals("equals is not symmetric", secondCopy, original);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
