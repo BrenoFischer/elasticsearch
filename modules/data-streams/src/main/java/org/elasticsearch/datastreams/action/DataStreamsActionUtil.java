@@ -14,7 +14,7 @@ import org.elasticsearch.cluster.metadata.IndexNameExpressionResolver;
 import java.util.EnumSet;
 import java.util.List;
 
-public class DataStreamsActionUtil {
+public final class DataStreamsActionUtil {
 
     /**
      * Gets data streams names, expanding wildcards using {@link IndicesOptions} provided.
@@ -22,6 +22,8 @@ public class DataStreamsActionUtil {
      * but we have to have either OPEN or CLOSE to have any names returned from {@link IndexNameExpressionResolver}. So here we always
      * add OPEN to make sure that happens.
      */
+    private DataStreamsActionUtil() {}
+    
     public static List<String> getDataStreamNames(
         IndexNameExpressionResolver indexNameExpressionResolver,
         ClusterState currentState,
